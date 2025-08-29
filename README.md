@@ -61,6 +61,19 @@ project(my_project)
 target_add_frogfs(${PROJECT_NAME}.elf)
 ```
 
+You can also preinstall extra Python dependencies into FrogFS’s build
+virtualenv via CMake:
+
+```cmake
+target_add_frogfs(${PROJECT_NAME}.elf
+    # CONFIG and NAME as before
+    REQUIREMENTS ${CMAKE_SOURCE_DIR}/tools/frogfs-extra-requirements.txt
+    PIP "heatshrink2>=0.10.0"
+)
+```
+`REQUIREMENTS` points to an additional requirements file, and `PIP` accepts a
+space-separated list of requirement specifiers.
+
 In C, this results in these two global symbols being available to your
 application:
 
@@ -136,6 +149,47 @@ Verbs are applied in descending order. You can prefix a transforms or the
 `compress` verb with `no` to disable it. There are a couple of special verbs:
 `discard` which prevents inclusion and `cache` (default), which caches the
 file in the build cache. See `frogfs_example.yaml` for example usage.
+
+### Extra Python dependencies
+
+You can ask FrogFS to install additional Python packages into the build-time
+virtualenv used by `mkfrogfs.py`. This helps enable optional features like
+`heatshrink` compression without modifying the project’s default
+`requirements.txt`.
+
+- `python_requirements`: a path or list of paths to `requirements.txt` files.
+- `python_packages`: a list of requirement specifiers (e.g. `pkg`, `pkg==1.2`).
+
+The same options are also supported under a nested `python:` section as
+`python.requirements` and `python.packages`.
+
+Example:
+
+```yaml
+define:
+  - project: $cwd
+
+collect:
+  - $project/web/*: /
+
+filter:
+  - "**/*.bin":
+      - compress heatshrink: { window: 11, lookahead: 4 }
+
+# Install heatshrink2 into the build venv
+python_packages:
+  - heatshrink2>=0.10.0
+
+# Or, alternatively:
+# python:
+#   requirements: tools/frogfs-extra-requirements.txt
+#   packages:
+#     - heatshrink2
+```
+
+When these settings are present, `mkfrogfs.py` installs them into the same
+virtualenv that CMake creates for FrogFS. Installs are cached using a content
+hash, so subsequent builds only reinstall when the inputs change.
 
 ## Usage
 
