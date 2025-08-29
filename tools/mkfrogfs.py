@@ -752,7 +752,6 @@ if __name__ == '__main__':
     install_extra_python_deps()
     # Re-attempt optional imports that may now be satisfied
     try:
-        global heatshrink2
         if heatshrink2 is None:
             import importlib
             heatshrink2 = importlib.import_module('heatshrink2')

@@ -36,11 +36,19 @@ macro(generate_frogfs_rules)
         set_property(TARGET frogfs_venv PROPERTY ADDITIONAL_CLEAN_FILES "${venv}")
     endif()
 
+    # Build the commands list for requirements installation
+    set(_frogfs_req_cmds)
+    list(APPEND _frogfs_req_cmds COMMAND ${Python3_VENV_EXECUTABLE} -m pip install -r ${frogfs_DIR}/requirements.txt)
+    if (ARG_REQUIREMENTS)
+        list(APPEND _frogfs_req_cmds COMMAND ${Python3_VENV_EXECUTABLE} -m pip install -r ${ARG_REQUIREMENTS})
+    endif()
+    if (ARG_PIP)
+        list(APPEND _frogfs_req_cmds COMMAND ${Python3_VENV_EXECUTABLE} -m pip install ${ARG_PIP})
+    endif()
+
     if (NOT TARGET frogfs_requirements)
         add_custom_target(frogfs_requirements
-            COMMAND ${Python3_VENV_EXECUTABLE} -m pip install -r ${frogfs_DIR}/requirements.txt
-            $<$<BOOL:${ARG_REQUIREMENTS}>:${Python3_VENV_EXECUTABLE} -m pip install -r ${ARG_REQUIREMENTS}>
-            $<$<BOOL:"${ARG_PIP}">:${Python3_VENV_EXECUTABLE} -m pip install ${ARG_PIP}>
+            ${_frogfs_req_cmds}
             COMMAND ${CMAKE_COMMAND} -E touch ${Python3_VENV}.stamp
             DEPENDS ${frogfs_DIR}/requirements.txt $<$<BOOL:${ARG_REQUIREMENTS}>:${ARG_REQUIREMENTS}>
             BYPRODUCTS ${Python3_VENV}.stamp
