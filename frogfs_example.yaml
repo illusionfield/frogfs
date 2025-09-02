@@ -30,6 +30,12 @@ filter:
         ext: br
     - no compress
 
+# Optional: install extra Python deps into venv for mkfrogfs
+# python_requirements:
+#   - tools/frogfs-extra-requirements.txt
+# python_packages:
+#   - heatshrink2>=0.13.0
+
   '*.js':
     - gzip
     - rename
