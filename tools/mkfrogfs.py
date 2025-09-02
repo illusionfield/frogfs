@@ -97,8 +97,7 @@ def load_config() -> dict:
     else:
         raise Exception('unexpected type for filter')
 
-    # Optional: extra python dependencies (top-level or under 'python')
-    pycfg = doc.get('python', {}) or {}
+    # Optional: extra python dependencies
 
     def _normalize_requirements(val):
         if not val:
@@ -118,13 +117,9 @@ def load_config() -> dict:
             return list(val)
         raise Exception('unexpected type for python packages')
 
-    reqs = []
-    # Support both top-level and nested keys
-    reqs += _normalize_requirements(doc.get('python_requirements'))
-    reqs += _normalize_requirements(pycfg.get('requirements'))
-    pkgs = []
-    pkgs += _normalize_packages(doc.get('python_packages'))
-    pkgs += _normalize_packages(pycfg.get('packages'))
+    # Enforce single style: top-level keys only
+    reqs = _normalize_requirements(doc.get('python_requirements'))
+    pkgs = _normalize_packages(doc.get('python_packages'))
 
     # Expand variables in paths and values
     reqs = [expand_variables(r, config['define']) for r in reqs]

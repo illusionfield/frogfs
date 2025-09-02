@@ -68,7 +68,7 @@ virtualenv via CMake:
 target_add_frogfs(${PROJECT_NAME}.elf
     # CONFIG and NAME as before
     REQUIREMENTS ${CMAKE_SOURCE_DIR}/tools/frogfs-extra-requirements.txt
-    PIP "heatshrink2>=0.10.0"
+    PIP "heatshrink2>=0.13.0"
 )
 ```
 `REQUIREMENTS` points to an additional requirements file, and `PIP` accepts a
@@ -160,9 +160,6 @@ virtualenv used by `mkfrogfs.py`. This helps enable optional features like
 - `python_requirements`: a path or list of paths to `requirements.txt` files.
 - `python_packages`: a list of requirement specifiers (e.g. `pkg`, `pkg==1.2`).
 
-The same options are also supported under a nested `python:` section as
-`python.requirements` and `python.packages`.
-
 Example:
 
 ```yaml
@@ -177,14 +174,13 @@ filter:
       - compress heatshrink: { window: 11, lookahead: 4 }
 
 # Install heatshrink2 into the build venv
-python_packages:
-  - heatshrink2>=0.10.0
+python_requirements:
+   - tools/frogfs-extra-requirements.txt
 
-# Or, alternatively:
-# python:
-#   requirements: tools/frogfs-extra-requirements.txt
-#   packages:
-#     - heatshrink2
+# or
+
+python_packages:
+  - heatshrink2>=0.13.0
 ```
 
 When these settings are present, `mkfrogfs.py` installs them into the same
