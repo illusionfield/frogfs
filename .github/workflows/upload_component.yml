@@ -22,7 +22,7 @@ jobs:
           echo "Injecting version ${VERSION} into idf_component.yml"
           tmpfile="$(mktemp)"
           # Remove any existing top-level version field, then prepend the new one
-          grep -v '^[[:space:]]*version:[[:space:]]*' idf_component.yml > "$tmpfile"
+          grep -v '^version:[[:space:]]*' idf_component.yml > "$tmpfile"
           printf 'version: "%s"\n' "$VERSION" > idf_component.yml
           cat "$tmpfile" >> idf_component.yml
           rm -f "$tmpfile"
